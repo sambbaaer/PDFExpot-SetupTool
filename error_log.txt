@@ -1,0 +1,18 @@
+2025-03-23 22:49:51,184 - INFO - Anwendung gestartet
+2025-03-23 22:49:51,347 - INFO - Benutzer-Konfigurationsverzeichnis erstellt: C:\Users\mytho\AppData\Roaming\PDFExportInstaller\config
+2025-03-23 22:49:51,349 - INFO - Konfigurationsdatei in Benutzerverzeichnis kopiert: C:\Users\mytho\AppData\Roaming\PDFExportInstaller\config\currentDirectories.json
+2025-03-23 22:49:51,352 - INFO - Konfigurationsdatei in Benutzerverzeichnis kopiert: C:\Users\mytho\AppData\Roaming\PDFExportInstaller\config\settings.json
+2025-03-23 22:49:51,353 - INFO - Suche Konfiguration in folgenden Pfaden:
+ - c:\Users\mytho\NAS-Speicher\11_Coding_Projects\20250323_PDF-Settings\V1\config\settings.json (nicht gefunden)
+ - c:\Users\mytho\NAS-Speicher\11_Coding_Projects\20250323_PDF-Settings\V1\PDFExpot-SetupTool\config\settings.json (gefunden)
+ - C:\Users\mytho\AppData\Roaming\PDFExportInstaller\config\settings.json (gefunden)
+ - C:\Users\mytho\NAS-Speicher\11_Coding_Projects\20250323_PDF-Settings\V1\PDFExpot-SetupTool\config\settings.json (gefunden)
+
+2025-03-23 22:49:51,354 - INFO - Konfigurationen erfolgreich von c:\Users\mytho\NAS-Speicher\11_Coding_Projects\20250323_PDF-Settings\V1\PDFExpot-SetupTool\config\settings.json geladen.
+2025-03-23 22:49:51,543 - INFO - Suche Konfiguration in folgenden Pfaden:
+ - c:\Users\mytho\NAS-Speicher\11_Coding_Projects\20250323_PDF-Settings\V1\config\settings.json (nicht gefunden)
+ - c:\Users\mytho\NAS-Speicher\11_Coding_Projects\20250323_PDF-Settings\V1\PDFExpot-SetupTool\config\settings.json (gefunden)
+ - C:\Users\mytho\AppData\Roaming\PDFExportInstaller\config\settings.json (gefunden)
+ - C:\Users\mytho\NAS-Speicher\11_Coding_Projects\20250323_PDF-Settings\V1\PDFExpot-SetupTool\config\settings.json (gefunden)
+
+2025-03-23 22:49:51,543 - INFO - Konfigurationen erfolgreich von c:\Users\mytho\NAS-Speicher\11_Coding_Projects\20250323_PDF-Settings\V1\PDFExpot-SetupTool\config\settings.json geladen.

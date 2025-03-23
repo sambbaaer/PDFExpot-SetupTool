@@ -1,0 +1,68 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg id="Ebene_1" data-name="Ebene 1" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 493.33 493.33">
+  <defs>
+    <style>
+      .cls-1 {
+        font-size: 49.33px;
+      }
+
+      .cls-1, .cls-2 {
+        fill: #333;
+        font-family: Bahnschrift, Bahnschrift;
+        font-variation-settings: 'wght' 400, 'wdth' 100;
+      }
+
+      .cls-3 {
+        fill: #fff;
+      }
+
+      .cls-4 {
+        fill: #f2f2f2;
+      }
+
+      .cls-5 {
+        fill: none;
+        stroke: #666;
+        stroke-miterlimit: 10;
+        stroke-width: 13px;
+      }
+
+      .cls-6 {
+        fill: #666;
+      }
+
+      .cls-7 {
+        fill: #c1272d;
+      }
+
+      .cls-8 {
+        letter-spacing: 0em;
+      }
+
+      .cls-2 {
+        font-size: 80.29px;
+      }
+
+      .cls-9 {
+        letter-spacing: -.01em;
+      }
+
+      .cls-10 {
+        fill: #ccc;
+        opacity: .31;
+      }
+    </style>
+  </defs>
+  <rect class="cls-4" width="493.33" height="493.33" rx="67.29" ry="67.29"/>
+  <rect class="cls-10" x="228.67" y="263.25" width="36" height="346.75" rx="18" ry="18" transform="translate(683.29 189.96) rotate(90)"/>
+  <g>
+    <path class="cls-3" d="M143.12,416.62c-18.12,0-32.85-14.74-32.85-32.86V109.57c0-18.12,14.74-32.85,32.85-32.85h153.13c5.85,0,11.4,2.23,15.63,6.27l64.21,61.39c4.44,4.25,6.99,10.2,6.99,16.35v223.04c0,18.12-14.74,32.86-32.85,32.86h-207.1Z"/>
+    <path class="cls-7" d="M296.25,83.22c4.17,0,8.13,1.59,11.14,4.47l64.21,61.39c3.16,3.03,4.98,7.27,4.98,11.65v223.04c0,14.53-11.82,26.35-26.35,26.35h-207.1c-14.53,0-26.35-11.82-26.35-26.35V109.57c0-14.53,11.82-26.35,26.35-26.35h153.13M296.25,70.22h-153.13c-21.74,0-39.35,17.62-39.35,39.35v274.19c0,21.74,17.62,39.35,39.35,39.35h207.1c21.74,0,39.35-17.62,39.35-39.35v-223.04c0-7.95-3.25-15.55-9-21.05l-64.21-61.39c-5.42-5.18-12.63-8.07-20.12-8.07h0Z"/>
+  </g>
+  <text class="cls-2" transform="translate(173.67 375.94)"><tspan class="cls-8" x="0" y="0">PD</tspan><tspan x="101.11" y="0">F</tspan></text>
+  <text class="cls-1" transform="translate(175.63 300.89)"><tspan class="cls-9" x="0" y="0">e</tspan><tspan x="25.72" y="0">xport</tspan></text>
+  <g>
+    <line class="cls-5" x1="237.05" y1="227.53" x2="341.73" y2="122.85"/>
+    <polygon class="cls-6" points="356 148.92 370.76 93.82 315.67 108.58 356 148.92"/>
+  </g>
+</svg>
