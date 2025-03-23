@@ -15,6 +15,119 @@ import glob
 import subprocess
 from tkinter import messagebox
 import pathlib
+import shutil
+
+def get_application_path():
+    """
+    Ermittelt den Pfad, in dem die Anwendung ausgeführt wird,
+    unabhängig davon, ob es sich um eine .py-Datei oder eine kompilierte EXE handelt.
+    
+    Returns:
+        str: Pfad zum Anwendungsverzeichnis
+    """
+    if getattr(sys, 'frozen', False):
+        # PyInstaller erzeugt einen temporären Ordner und speichert den Pfad in _MEIPASS
+        if hasattr(sys, '_MEIPASS'):
+            return sys._MEIPASS
+        else:
+            # Wenn es eine kompilierte ausführbare Datei ist, aber kein _MEIPASS
+            return os.path.dirname(sys.executable)
+    else:
+        # Normales Python-Skript
+        return os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+
+def get_config_search_paths(config_filename):
+    """
+    Ermittelt alle Pfade, in denen nach Konfigurationsdateien gesucht werden soll.
+    
+    Args:
+        config_filename (str): Der Name der Konfigurationsdatei
+        
+    Returns:
+        list: Liste mit möglichen Pfaden, in priorisierter Reihenfolge
+    """
+    app_path = get_application_path()
+    
+    # Benutzerverzeichnis für Konfigurationsdateien
+    if sys.platform == "win32":
+        user_config_dir = os.path.join(os.environ.get('APPDATA', ''), "PDFExportInstaller", "config")
+    elif sys.platform == "darwin":  # macOS
+        user_config_dir = os.path.join(os.path.expanduser("~"), "Library", "Application Support", "PDFExportInstaller", "config")
+    else:  # Linux und andere
+        user_config_dir = os.path.join(os.path.expanduser("~"), ".config", "PDFExportInstaller", "config")
+    
+    # Pfade in der Reihenfolge der Priorität
+    search_paths = [
+        os.path.join(os.path.dirname(app_path), "config", config_filename),  # Neben der EXE im "config"-Ordner
+        os.path.join(app_path, "config", config_filename),                   # Im App-Verzeichnis
+        os.path.join(user_config_dir, config_filename),                      # Im Benutzerverzeichnis
+        os.path.join(os.getcwd(), "config", config_filename)                 # Im aktuellen Arbeitsverzeichnis
+    ]
+    
+    # Für Debugging
+    debug_info = "Suche Konfiguration in folgenden Pfaden:\n"
+    for path in search_paths:
+        exists = os.path.exists(path)
+        debug_info += f" - {path} {'(gefunden)' if exists else '(nicht gefunden)'}\n"
+    logging.info(debug_info)
+    
+    return search_paths
+
+def ensure_user_config_directory():
+    """
+    Stellt sicher, dass das Benutzer-Konfigurationsverzeichnis existiert.
+    Erstellt es, falls es nicht existiert.
+    
+    Returns:
+        str: Pfad zum Benutzer-Konfigurationsverzeichnis
+    """
+    if sys.platform == "win32":
+        user_config_dir = os.path.join(os.environ.get('APPDATA', ''), "PDFExportInstaller", "config")
+    elif sys.platform == "darwin":  # macOS
+        user_config_dir = os.path.join(os.path.expanduser("~"), "Library", "Application Support", "PDFExportInstaller", "config")
+    else:  # Linux und andere
+        user_config_dir = os.path.join(os.path.expanduser("~"), ".config", "PDFExportInstaller", "config")
+    
+    if not os.path.exists(user_config_dir):
+        try:
+            os.makedirs(user_config_dir, exist_ok=True)
+            logging.info(f"Benutzer-Konfigurationsverzeichnis erstellt: {user_config_dir}")
+        except Exception as e:
+            logging.error(f"Fehler beim Erstellen des Benutzer-Konfigurationsverzeichnisses: {e}")
+            return None
+    
+    return user_config_dir
+
+def copy_default_configs_if_needed():
+    """
+    Kopiert die Standard-Konfigurationsdateien in das Benutzerverzeichnis,
+    falls sie dort noch nicht existieren.
+    """
+    user_config_dir = ensure_user_config_directory()
+    if not user_config_dir:
+        return
+    
+    app_path = get_application_path()
+    default_config_path = os.path.join(app_path, "config")
+    
+    # Überprüfen, ob der Standard-Konfigurationsordner existiert
+    if not os.path.exists(default_config_path):
+        default_config_path = os.path.join(os.path.dirname(app_path), "config")
+        if not os.path.exists(default_config_path):
+            logging.warning("Standard-Konfigurationsordner nicht gefunden.")
+            return
+    
+    # Alle JSON-Dateien im Standard-Konfigurationsordner kopieren
+    for config_file in glob.glob(os.path.join(default_config_path, "*.json")):
+        target_file = os.path.join(user_config_dir, os.path.basename(config_file))
+        
+        # Nur kopieren, wenn die Datei noch nicht existiert
+        if not os.path.exists(target_file):
+            try:
+                shutil.copy2(config_file, target_file)
+                logging.info(f"Konfigurationsdatei in Benutzerverzeichnis kopiert: {target_file}")
+            except Exception as e:
+                logging.error(f"Fehler beim Kopieren der Konfigurationsdatei: {e}")
 
 def find_resource_path(resource_path):
     """
@@ -27,15 +140,23 @@ def find_resource_path(resource_path):
     Returns:
         str: Korrekter absoluter Pfad zur Ressource
     """
-    # Ermittle das Basis-Verzeichnis des Programms
-    if getattr(sys, 'frozen', False):
-        # Ausführbare Datei (z.B. PyInstaller)
-        base_path = os.path.dirname(sys.executable)
-    else:
-        # Normales Python-Skript
-        base_path = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+    app_path = get_application_path()
     
-    return os.path.normpath(os.path.join(base_path, resource_path))
+    # Verschiedene mögliche Pfade in Prioritätsreihenfolge
+    possible_paths = [
+        os.path.join(os.path.dirname(app_path), resource_path),  # Neben der EXE
+        os.path.join(app_path, resource_path),                   # Im App-Verzeichnis
+        os.path.join(os.getcwd(), resource_path)                 # Im aktuellen Arbeitsverzeichnis
+    ]
+    
+    # Den ersten existierenden Pfad zurückgeben
+    for path in possible_paths:
+        if os.path.exists(path):
+            return os.path.normpath(path)
+    
+    # Wenn keine Datei gefunden wurde, den ersten Pfad zurückgeben (für Fehlermeldungen)
+    logging.warning(f"Ressource nicht gefunden: {resource_path}")
+    return os.path.normpath(possible_paths[0])
 
 def lade_konfigurationen(datei_pfad):
     """
@@ -47,35 +168,31 @@ def lade_konfigurationen(datei_pfad):
     Returns:
         dict: Die geladenen Konfigurationen oder None bei Fehler.
     """
-    # Überprüfe zuerst den für ausführbare Dateien korrigierten Pfad
-    korrigierter_pfad = find_resource_path(datei_pfad)
+    # Stelle sicher, dass benutzerspezifische Konfigurationen vorhanden sind
+    copy_default_configs_if_needed()
     
-    # Prüfe verschiedene mögliche Pfadvarianten
-    pfade_zu_pruefen = [
-        korrigierter_pfad,  # Korrigierter Pfad für ausführbare Dateien
-        datei_pfad,  # Original-Pfad wie angegeben
-        os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))), datei_pfad),  # Relativ zum Überverzeichnis des Moduls
-        os.path.join(os.path.abspath('.'), datei_pfad),  # Relativ zum aktuellen Arbeitsverzeichnis
-    ]
+    # Extrahiere den Dateinamen aus dem Pfad
+    config_filename = os.path.basename(datei_pfad)
     
+    # Alle möglichen Pfade für die Konfigurationsdatei ermitteln
+    pfade_zu_pruefen = get_config_search_paths(config_filename)
+    
+    # Durch alle möglichen Pfade iterieren und den ersten verfügbaren verwenden
     for pfad in pfade_zu_pruefen:
         try:
-            with open(pfad, 'r', encoding='utf-8') as f:
-                konfigurationen = json.load(f)
-            logging.info(f"Konfigurationen erfolgreich von {pfad} geladen.")
-            return konfigurationen
-        except FileNotFoundError:
-            continue  # Versuche den nächsten Pfad
+            if os.path.exists(pfad):
+                with open(pfad, 'r', encoding='utf-8') as f:
+                    konfigurationen = json.load(f)
+                logging.info(f"Konfigurationen erfolgreich von {pfad} geladen.")
+                return konfigurationen
         except json.JSONDecodeError:
-            messagebox.showerror("Fehler", f"Fehler beim Lesen der JSON-Datei: {pfad}")
             logging.error(f"Fehler beim Lesen der JSON-Datei: {pfad}")
-            return None
+            continue
         except Exception as e:
-            messagebox.showerror("Fehler", f"Unerwarteter Fehler beim Laden der Konfigurationen: {e}")
-            logging.error(f"Unerwarteter Fehler beim Laden der Konfigurationen: {e}")
-            return None
+            logging.error(f"Unerwarteter Fehler beim Laden der Konfigurationen von {pfad}: {e}")
+            continue
     
-    # Wenn alle Pfade fehlschlagen, zeige eine Fehlermeldung mit allen versuchten Pfaden
+    # Wenn keine Konfigurationsdatei gefunden wurde
     fehler_nachricht = f"Konfigurationsdatei nicht gefunden: {datei_pfad}\n\nGeprüfte Pfade:\n" + "\n".join(pfade_zu_pruefen)
     messagebox.showerror("Fehler", fehler_nachricht)
     logging.error(f"Konfigurationsdatei nicht gefunden: Geprüfte Pfade: {pfade_zu_pruefen}")
@@ -145,7 +262,7 @@ def get_system_directories():
     benutzername = getpass.getuser()
     
     # Konfigurationen laden
-    verzeichnisse = lade_konfigurationen("config/currentDirectories.json")
+    verzeichnisse = lade_konfigurationen("currentDirectories.json")
     
     # Betriebssystem ermitteln
     if sys.platform == "win32":

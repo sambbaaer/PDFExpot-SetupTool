@@ -8,6 +8,7 @@ import tkinter as tk
 import customtkinter as ctk
 import logging
 import threading
+import sys
 from tkinter import messagebox
 
 from ..utils import ist_adobe_bridge_installiert, lade_konfigurationen
@@ -28,15 +29,23 @@ class PDFExportEinstellungenGUI(ctk.CTk):
         
         # Fensterkonfiguration
         self.title("PDF-Export Einstellungen Installer")
-        self.geometry("1000x650")  # Breiter und höher für zweispaltiges Layout ohne Scrollen
         self.minsize(1000, 650)    # Mindestgröße festlegen
         
-        # Fenster auf dem Bildschirm zentrieren
+        # Fenster im Vollbild öffnen - betriebssystemübergreifend
         screen_width = self.winfo_screenwidth()
         screen_height = self.winfo_screenheight()
-        x = (screen_width - 1000) // 2
-        y = (screen_height - 650) // 2
-        self.geometry(f"1000x650+{x}+{y}")
+        self.geometry(f"{screen_width}x{screen_height}+0+0")
+        
+        # Betriebssystemspezifische Vollbildanpassungen
+        if sys.platform == "win32":
+            self.state("zoomed")  # Windows-spezifisch
+        elif sys.platform == "darwin":
+            self.attributes("-zoomed", 1)  # macOS-spezifisch
+        else:
+            # Für Linux und andere Systeme
+            self.attributes("-fullscreen", True)
+            # Escape-Taste zum Beenden des Vollbildmodus ermöglichen
+            self.bind("<Escape>", lambda event: self.attributes("-fullscreen", False))
         
         # Installer initialisieren
         self.installer = EinstellungsInstaller(self.update_status)
