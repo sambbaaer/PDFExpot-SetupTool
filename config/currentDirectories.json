@@ -1,12 +1,12 @@
 {
     "windows": {
-        "adobe_pdf_settings_pfad": "C:/Users/%USERNAME%/AppData/Roaming/Adobe/Adobe PDF/Settings",
+        "adobe_pdf_settings_pfad": "C:\Users\%USERNAME%\AppData\Roaming\Adobe\Adobe PDF\Settings",
         "color_settings_pfad": "C:/Users/%USERNAME%/AppData/Roaming/Adobe/Color/Settings",
-        "icc_profile_pfad": "C:/Users/%USERNAME%/AppData/Local/Adobe/Color/Profiles"
+        "icc_profile_pfad": "C:\Windows\System32\spool\drivers\color"
     },
     "mac": {
         "adobe_pdf_settings_pfad": "/Users/%USERNAME%/Library/Application Support/Adobe/Adobe PDF/Settings",
         "color_settings_pfad": "/Users/%USERNAME%/Library/Application Support/Adobe/Color/Settings",
-        "icc_profile_pfad": "/Users/%USERNAME%/Library/ColorSync/Profiles"
+        "icc_profile_pfad": "/Library/ColorSync/Profiles"
     }
 }
