@@ -3,12 +3,16 @@
     "Name": "Printex - coated",
     "Adobe PDF Settings": "Printex_coated.joboptions",
     "Color Setting": "Printex_coated.csf",
-    "ICC-Profil": "PSOcoated_v3.icc"
+    "ICC-Profil": "PSOcoated_v3.icc",
+    "Paper Type": "coated",
+    "Description": "Für gestrichenes Papier (glänzend, matt)"
   },
-    {
-      "Name": "Printex - uncoated",
-      "Adobe PDF Settings": "Printex_uncoated.joboptions",
-      "Color Setting": "Printex_uncoated.csf",
-      "ICC-Profil": "PSOuncoated_v3_FOGRA52.icc"
-    }
+  {
+    "Name": "Printex - uncoated",
+    "Adobe PDF Settings": "Printex_uncoated.joboptions",
+    "Color Setting": "Printex_uncoated.csf",
+    "ICC-Profil": "PSOuncoated_v3_FOGRA52.icc",
+    "Paper Type": "uncoated",
+    "Description": "Für ungestrichenes Papier (Naturpapier)"
+  }
 ]

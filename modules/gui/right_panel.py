@@ -1,9 +1,3 @@
-"""
-Right Panel Modul für PDF-Export-Einstellungen-Installer
-
-Dieses Modul enthält die Komponenten für die rechte Seite der GUI-Anwendung.
-"""
-
 import customtkinter as ctk
 import os
 import logging
@@ -26,78 +20,223 @@ class RightPanel(ctk.CTkFrame):
     
     def __init__(self, parent, main_app):
         """Initialisiert das Panel."""
-        super().__init__(parent, corner_radius=8, fg_color="#F1F5F9")
+        super().__init__(parent, corner_radius=6, fg_color="#F5F5F7")  # Helles Apple-Grau
         self.main_app = main_app
         self.beschreibungen = {}  # Cache für geladene Beschreibungen
         self._erstelle_ui()
     
     def _erstelle_ui(self):
-        """Erstellt die UI-Elemente für das Panel."""
-        # Beschreibungsframe mit abgerundeten Ecken - kompakter
-        self.beschreibung_frame = ctk.CTkFrame(self, fg_color="#FFFFFF", corner_radius=8)
-        self.beschreibung_frame.pack(fill="both", expand=True, padx=15, pady=(8, 8))
+        """Erstellt die UI-Elemente für das Panel im Apple-Design-Stil."""
+        # Hauptcontainer mit mehr Weißraum
+        self.main_container = ctk.CTkFrame(self, fg_color="transparent")
+        self.main_container.pack(fill="both", expand=True, padx=15, pady=15)
         
-        # Beschreibungstitel - kompakter
-        self.beschreibung_titel = ctk.CTkLabel(self.beschreibung_frame, 
-                                             text="Beschreibung",
-                                             font=ctk.CTkFont(size=15, weight="bold"),
-                                             text_color="#1E40AF")
-        self.beschreibung_titel.pack(anchor="w", padx=15, pady=(8, 2))
+        # Einstellungsinformationen im oberen Bereich
+        self.info_frame = ctk.CTkFrame(self.main_container, corner_radius=10, fg_color="#FFFFFF", height=120)
+        self.info_frame.pack(fill="x", pady=(0, 15))
         
-        # Untertitel für die Beschreibung (wird dynamisch aktualisiert) - kompakter
-        self.beschreibung_untertitel = ctk.CTkLabel(self.beschreibung_frame, 
-                                                 text="Bitte wählen Sie eine Einstellung aus der Liste.",
-                                                 font=ctk.CTkFont(size=13, slant="italic"),
-                                                 text_color="#6B7280")
-        self.beschreibung_untertitel.pack(anchor="w", padx=15, pady=(0, 5))
+        # Grid-Layout für Infos
+        self.info_frame.grid_columnconfigure(0, weight=1)
+        self.info_frame.grid_columnconfigure(1, weight=0)
         
-        # Trennlinie - dünner
-        self.separator = ctk.CTkFrame(self.beschreibung_frame, height=1, fg_color="#E5E7EB")
-        self.separator.pack(fill="x", padx=15, pady=(0, 5))
+        # Icon-/Titel-Bereich
+        self.icon_frame = ctk.CTkFrame(self.info_frame, fg_color="transparent")
+        self.icon_frame.grid(row=0, column=0, sticky="nw", padx=15, pady=15)
         
-        # Scrollbarer Beschreibungsbereich
-        self.beschreibung_scroll = ctk.CTkScrollableFrame(self.beschreibung_frame, fg_color="transparent")
-        self.beschreibung_scroll.pack(fill="both", expand=True, padx=15, pady=(0, 15))
-        
-        # Beschreibungstext (wird dynamisch aktualisiert)
-        default_desc = (
-            "Hier erscheint die Beschreibung der ausgewählten Einstellung. "
-            "Die Einstellungen enthalten vordefinierte Werte für den professionellen Druck."
+        # PDF-Icon (simuliert mit Text)
+        self.icon_label = ctk.CTkLabel(
+            self.icon_frame, 
+            text="PDF", 
+            font=ctk.CTkFont(size=22, weight="bold"),
+            text_color="#FF3B30",  # Apple Rot
+            width=45,
+            height=45,
+            fg_color="#FFF5F5",
+            corner_radius=8
         )
+        self.icon_label.pack(side="left", padx=(0, 10))
         
-        self.beschreibung_label = ctk.CTkLabel(self.beschreibung_scroll, 
-                                             text=default_desc,
-                                             font=ctk.CTkFont(size=13),
-                                             justify="left",
-                                             wraplength=440)
-        self.beschreibung_label.pack(anchor="w", fill="x")
+        # Titel & Untertitel für ausgewählte Einstellung
+        self.title_frame = ctk.CTkFrame(self.icon_frame, fg_color="transparent")
+        self.title_frame.pack(side="left", fill="y", pady=3)
         
-        # Hilfe- und Info-Buttons im unteren Bereich - kompakter
-        self.button_frame = ctk.CTkFrame(self, fg_color="transparent")
-        self.button_frame.pack(fill="x", padx=15, pady=(3, 8))
+        self.title_label = ctk.CTkLabel(
+            self.title_frame, 
+            text="Keine Auswahl", 
+            font=ctk.CTkFont(size=16, weight="bold"),
+            text_color="#000000",  # Schwarz für Titel
+            anchor="w"
+        )
+        self.title_label.pack(anchor="w")
         
-        # Buttons in einer Reihe - kleiner
-        self.info_button = ctk.CTkButton(self.button_frame, 
-                                      text="Info", 
-                                      command=self._zeige_info,
-                                      width=110,
-                                      height=30,
-                                      fg_color="#6366F1", 
-                                      hover_color="#4F46E5",
-                                      corner_radius=6,
-                                      font=ctk.CTkFont(size=13))
-        self.info_button.pack(side="left", padx=(0, 10))
+        self.subtitle_label = ctk.CTkLabel(
+            self.title_frame, 
+            text="Wählen Sie eine Einstellung", 
+            font=ctk.CTkFont(size=13),
+            text_color="#86868B",  # Apple Grau
+            anchor="w"
+        )
+        self.subtitle_label.pack(anchor="w")
         
-        self.hilfe_button = ctk.CTkButton(self.button_frame, 
-                                       text="Hilfe", 
-                                       command=self._zeige_hilfe,
-                                       width=110,
-                                       height=30,
-                                       fg_color="#8B5CF6", 
-                                       hover_color="#7C3AED",
-                                       corner_radius=6,
-                                       font=ctk.CTkFont(size=13))
+        # Installationstyp-Badges
+        self.badges_frame = ctk.CTkFrame(self.info_frame, fg_color="transparent")
+        self.badges_frame.grid(row=1, column=0, sticky="sw", padx=15, pady=(0, 15))
+        
+        # Badges für die verschiedenen Dateitypen
+        self.badge_pdf = self._create_badge("PDF", "#FF9500")  # Apple Orange
+        self.badge_pdf.pack(side="left", padx=(0, 5))
+        
+        self.badge_color = self._create_badge("Farbe", "#007AFF")  # Apple Blau
+        self.badge_color.pack(side="left", padx=5)
+        
+        self.badge_icc = self._create_badge("ICC", "#5AC8FA")  # Apple Hellblau
+        self.badge_icc.pack(side="left", padx=5)
+        
+        # Kompakte Beschreibung im mittleren Bereich
+        self.beschreibung_frame = self._create_section("Beschreibung", True)
+        
+        # Scrollbarer Beschreibungstext
+        self.beschreibung_text = ctk.CTkTextbox(
+            self.beschreibung_frame, 
+            wrap="word",
+            font=ctk.CTkFont(size=13),
+            text_color="#000000",
+            fg_color="#FFFFFF",
+            border_width=0,
+            height=100  # Reduzierte Höhe!
+        )
+        self.beschreibung_text.pack(fill="both", expand=True, padx=2, pady=(0, 5))
+        
+        # Default-Text setzen
+        self.beschreibung_text.insert("1.0", "Hier erscheint die Beschreibung der ausgewählten Einstellung. "
+                                      "Wählen Sie eine Einstellung aus der Liste.")
+        self.beschreibung_text.configure(state="disabled")  # Schreibschutz
+        
+        # Technische Details im unteren Bereich
+        self.details_frame = self._create_section("Technische Details", False)
+        
+        # Infozeilen im Apple-Stil
+        self.info_lines = [
+            {"label": "Papiertyp", "value": "-"},
+            {"label": "ICC-Profil", "value": "-"},
+            {"label": "PDF-Standard", "value": "-"}
+        ]
+        
+        # Info-Zeilen erstellen
+        for i, info in enumerate(self.info_lines):
+            self._create_info_line(self.details_frame, info["label"], info["value"], i)
+        
+        # Button-Bereich im Footer
+        self.footer_frame = ctk.CTkFrame(self.main_container, fg_color="transparent", height=40)
+        self.footer_frame.pack(fill="x", pady=(10, 0))
+        
+        # Buttons für Hilfe und Info
+        self.hilfe_button = ctk.CTkButton(
+            self.footer_frame, 
+            text="Hilfe", 
+            command=self._zeige_hilfe,
+            width=100,
+            height=32,
+            fg_color="#E9E9EB",  # Helles Grau
+            text_color="#000000",  # Schwarz
+            hover_color="#DEDEE0",
+            corner_radius=6,
+            border_width=0,
+            font=ctk.CTkFont(size=13)
+        )
         self.hilfe_button.pack(side="left")
+        
+        self.info_button = ctk.CTkButton(
+            self.footer_frame, 
+            text="Info", 
+            command=self._zeige_info,
+            width=100,
+            height=32,
+            fg_color="#E9E9EB",  # Helles Grau
+            text_color="#000000",  # Schwarz
+            hover_color="#DEDEE0",
+            corner_radius=6,
+            border_width=0,
+            font=ctk.CTkFont(size=13)
+        )
+        self.info_button.pack(side="left", padx=(10, 0))
+    
+    def _create_badge(self, text, color):
+        """Erstellt ein Badge im Apple-Stil."""
+        badge = ctk.CTkLabel(
+            self.badges_frame,  # Master-Widget
+            text=text,
+            font=ctk.CTkFont(size=11, weight="bold"),
+            fg_color=color,
+            text_color="#FFFFFF",
+            corner_radius=4,
+            width=0,
+            height=24,
+            padx=8
+        )
+        return badge
+    
+    def _create_section(self, title, with_border=True):
+        """Erstellt einen Abschnittsrahmen im Apple-Stil."""
+        # Container
+        frame = ctk.CTkFrame(
+            self.main_container, 
+            corner_radius=10, 
+            fg_color="#FFFFFF",
+            border_width=1 if with_border else 0,
+            border_color="#E5E5EA"  # Apple Separator
+        )
+        frame.pack(fill="x", pady=(0, 10))
+        
+        # Titelzeile
+        title_label = ctk.CTkLabel(
+            frame, 
+            text=title, 
+            font=ctk.CTkFont(size=13, weight="bold"),
+            text_color="#000000",
+            anchor="w"
+        )
+        title_label.pack(anchor="w", padx=15, pady=(12, 8))
+        
+        # Trennlinie (optional)
+        if with_border:
+            separator = ctk.CTkFrame(frame, height=1, fg_color="#E5E5EA")
+            separator.pack(fill="x", padx=0, pady=(0, 5))
+            
+        return frame
+    
+    def _create_info_line(self, parent, label, value, row):
+        """Erstellt eine Infozeile im Apple-Stil."""
+        # Label-Spalte
+        label_frame = ctk.CTkFrame(parent, fg_color="transparent")
+        label_frame.pack(fill="x", padx=15, pady=4)
+        
+        # Zweispaltiges Layout
+        label_frame.grid_columnconfigure(0, weight=1)
+        label_frame.grid_columnconfigure(1, weight=1)
+        
+        # Label
+        label_text = ctk.CTkLabel(
+            label_frame, 
+            text=label,
+            font=ctk.CTkFont(size=13),
+            text_color="#86868B",  # Apple Grau
+            anchor="w"
+        )
+        label_text.grid(row=0, column=0, sticky="w")
+        
+        # Wert
+        value_text = ctk.CTkLabel(
+            label_frame, 
+            text=value,
+            font=ctk.CTkFont(size=13),
+            text_color="#000000",  # Schwarz
+            anchor="e"
+        )
+        value_text.grid(row=0, column=1, sticky="e")
+        
+        # Diese Referenz speichern, um später aktualisieren zu können
+        setattr(self, f"value_{row}", value_text)
     
     def _zeige_info(self):
         """Zeigt Informationen zur Anwendung an."""
@@ -109,6 +248,53 @@ class RightPanel(ctk.CTkFrame):
         from .dialogs import zeige_hilfe_dialog
         zeige_hilfe_dialog(self.main_app)
     
+    def _update_badges(self, einstellung):
+        """Aktualisiert die Badges basierend auf der ausgewählten Einstellung."""
+        # Alle Badges sichtbar machen
+        self.badge_pdf.pack(side="left", padx=(0, 5))
+        self.badge_color.pack(side="left", padx=5)
+        self.badge_icc.pack(side="left", padx=5)
+        
+        # Badges ausblenden, wenn die zugehörige Einstellung nicht vorhanden ist
+        if einstellung:
+            if not einstellung.get("Adobe PDF Settings"):
+                self.badge_pdf.pack_forget()
+            if not einstellung.get("Color Setting"):
+                self.badge_color.pack_forget()
+            if not einstellung.get("ICC-Profil"):
+                self.badge_icc.pack_forget()
+    
+    def _update_tech_details(self, einstellung):
+        """Aktualisiert die technischen Details basierend auf der ausgewählten Einstellung."""
+        if einstellung:
+            # Papiertyp aus der JSON-Datei verwenden
+            paper_type = einstellung.get("Paper Type", "unknown")
+            
+            # Benutzerfreundliche Bezeichnung für den Papiertyp
+            papiertyp_map = {
+                "coated": "Gestrichenes Papier",
+                "uncoated": "Ungestrichenes Papier",
+                "recycled": "Recycling-Papier",
+                "specialty": "Spezialmedium",
+                "newspaper": "Zeitungspapier"
+            }
+            
+            # Papiertyp-Text oder Fallback
+            papiertyp = papiertyp_map.get(paper_type, "Spezialmedium")
+            
+            # Werte aktualisieren
+            self.value_0.configure(text=papiertyp)
+            self.value_1.configure(text=einstellung.get("ICC-Profil", "-"))
+            
+            # PDF Standard aus der Joboptions-Datei ermitteln (vereinfacht)
+            pdf_standard = "PDF/X-4"  # Standardwert
+            self.value_2.configure(text=pdf_standard)
+        else:
+            # Auf Standardwerte zurücksetzen
+            self.value_0.configure(text="-")
+            self.value_1.configure(text="-")
+            self.value_2.configure(text="-")
+    
     def zeige_beschreibung(self, selected_name, selected_index, selection):
         """
         Zeigt die Beschreibung der ausgewählten Einstellung an.
@@ -118,88 +304,68 @@ class RightPanel(ctk.CTkFrame):
             selected_index (int): Index der ausgewählten Einstellung oder None
             selection (tuple): Tupel aller ausgewählten Indices oder None
         """
+        # TextBox auf bearbeitbar setzen
+        self.beschreibung_text.configure(state="normal")
+        # Text löschen
+        self.beschreibung_text.delete("1.0", "end")
+        
         if not selected_name:
             # Keine Auswahl - Standardtext anzeigen
-            self.beschreibung_untertitel.configure(
-                text="Bitte wählen Sie eine Einstellung aus der Liste.",
-                text_color="#6B7280"
-            )
-            self.beschreibung_label.configure(
-                text="Hier erscheint die Beschreibung der ausgewählten Einstellung.",
-                text_color="#6B7280"
-            )
+            self.title_label.configure(text="Keine Auswahl")
+            self.subtitle_label.configure(text="Wählen Sie eine Einstellung")
             
-            # Hinweisrahmen entfernen, falls vorhanden
-            if hasattr(self, 'hinweis_frame'):
-                self.hinweis_frame.pack_forget()
+            self.beschreibung_text.insert("1.0", "Hier erscheint die Beschreibung der ausgewählten Einstellung. "
+                                         "Wählen Sie eine Einstellung aus der Liste.")
             
-            return
-        
-        # Prüfen, ob die Beschreibung bereits im Cache ist
-        if selected_name not in self.beschreibungen:
-            # Beschreibung noch nicht geladen, jetzt laden
-            self._lade_beschreibung(selected_name, selected_index)
-        
-        # Beschreibung aus dem Cache abrufen
-        beschreibung = self.beschreibungen.get(selected_name, f"Keine Beschreibung für '{selected_name}' verfügbar.")
-        
-        # Mehrfachauswahl-Hinweis zeigen oder verstecken
-        if selection and len(selection) > 1:
-            self._zeige_mehrfachauswahl_hinweis(selected_name, len(selection))
+            # Auch technische Details zurücksetzen
+            self._update_tech_details(None)
+            # Badges aktualisieren
+            self._update_badges(None)
+            
         else:
-            # Bei Einzelauswahl den Hinweisrahmen entfernen
-            if hasattr(self, 'hinweis_frame'):
-                self.hinweis_frame.pack_forget()
+            # Einstellung gefunden
+            einstellung = None if selected_index is None else self.main_app.einstellungen_daten[selected_index]
             
-            self.beschreibung_untertitel.configure(
-                text=f"Detaillierte Beschreibung von '{selected_name}':",
-                text_color="#4B5563"
-            )
+            # Titel setzen
+            self.title_label.configure(text=selected_name)
+            
+            # Untertitel basierend auf der Mehrfachauswahl oder der Description
+            if selection and len(selection) > 1:
+                self.subtitle_label.configure(text=f"{len(selection)} Einstellungen ausgewählt")
+            else:
+                # Beschreibung aus der JSON-Datei verwenden
+                beschreibung = einstellung.get("Description", "")
+                if not beschreibung:
+                    # Fallback zur alten Logik, wenn keine Beschreibung vorhanden
+                    paper_type = einstellung.get("Paper Type", "")
+                    if paper_type == "coated":
+                        beschreibung = "Für gestrichenes Papier"
+                    elif paper_type == "uncoated":
+                        beschreibung = "Für ungestrichenes Papier"
+                    else:
+                        beschreibung = f"Einstellung für {paper_type}"
+                
+                self.subtitle_label.configure(text=beschreibung)
+            
+            # Prüfen, ob die Beschreibung bereits im Cache ist
+            if selected_name not in self.beschreibungen:
+                # Beschreibung noch nicht geladen, jetzt laden
+                self._lade_beschreibung(selected_name, selected_index)
+            
+            # Beschreibung aus dem Cache abrufen
+            beschreibung = self.beschreibungen.get(selected_name, f"Keine Beschreibung für '{selected_name}' verfügbar.")
+            
+            # Beschreibung anzeigen
+            self.beschreibung_text.insert("1.0", beschreibung)
+            
+            # Technische Details aktualisieren
+            self._update_tech_details(einstellung)
+            
+            # Badges aktualisieren
+            self._update_badges(einstellung)
         
-        # Beschreibung anzeigen
-        self.beschreibung_label.configure(
-            text=beschreibung,
-            text_color="#374151"
-        )
-    
-    def _zeige_mehrfachauswahl_hinweis(self, selected_name, selected_count):
-        """
-        Zeigt einen gelben Hinweis an, wenn mehrere Einstellungen ausgewählt wurden.
-        
-        Args:
-            selected_name (str): Name der ersten ausgewählten Einstellung
-            selected_count (int): Anzahl der ausgewählten Einstellungen
-        """
-        anzahl_text = f"Sie haben {selected_count} Einstellungen ausgewählt. "
-        anzahl_text += f"Hier sehen Sie die Beschreibung für '{selected_name}':"
-        
-        # Erstelle Hinweisrahmen mit gelbem Hintergrund für Mehrfachauswahl
-        if not hasattr(self, 'hinweis_frame'):
-            self.hinweis_frame = ctk.CTkFrame(
-                self.beschreibung_frame, 
-                fg_color="#FEF9C3", 
-                corner_radius=6
-            )
-            self.hinweis_text = ctk.CTkLabel(
-                self.hinweis_frame, 
-                text=anzahl_text,
-                text_color="#854D0E",
-                font=ctk.CTkFont(size=13, slant="italic"),
-                wraplength=440
-            )
-            self.hinweis_text.pack(padx=10, pady=8)
-        else:
-            self.hinweis_text.configure(text=anzahl_text)
-        
-        # Paket den Frame vor dem Beschreibungslabel
-        if self.hinweis_frame.winfo_manager() != 'pack':
-            self.hinweis_frame.pack(fill="x", padx=15, pady=(0, 10), before=self.separator)
-        
-        # Normale Untertitelanzeige setzen
-        self.beschreibung_untertitel.configure(
-            text=f"Detaillierte Beschreibung von '{selected_name}':",
-            text_color="#4B5563"
-        )
+        # TextBox wieder auf schreibgeschützt setzen
+        self.beschreibung_text.configure(state="disabled")
     
     def _lade_beschreibung(self, name, index):
         """
@@ -235,6 +401,9 @@ class RightPanel(ctk.CTkFrame):
                 beschreibung = joboptions_parser.get_readable_description(joboptions_pfad)
                 
                 if beschreibung:
+                    # Beschreibung kürzen, falls sie zu lang ist
+                    if len(beschreibung) > 500:
+                        beschreibung = beschreibung[:497] + "..."
                     self.beschreibungen[name] = beschreibung
                 else:
                     self.beschreibungen[name] = standard_beschreibung

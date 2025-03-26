@@ -1,13 +1,3 @@
-"""
-PDF-Export Einstellungen Installer
-
-Dieses Programm installiert vordefinierte PDF-Export-Einstellungen für Adobe-Programme,
-einschließlich Farbprofilen, PDF-Einstellungen und Adobe-Farbeinstellungen.
-Es unterstützt verschiedene Druckumgebungen wie beschichtetes und unbeschichtetes Papier.
-
-Copyright (c) 2025 sambbaer
-"""
-
 # --------------------------------
 # Imports und Module
 # --------------------------------

@@ -1,9 +1,3 @@
-"""
-Basis-GUI-Modul für PDF-Export-Einstellungen-Installer
-
-Dieses Modul enthält die Hauptklasse für die GUI-Anwendung.
-"""
-
 import tkinter as tk
 import customtkinter as ctk
 import logging
@@ -21,21 +15,24 @@ from .right_panel import RightPanel
 class PDFExportEinstellungenGUI(ctk.CTk):
     """
     Hauptklasse für die PDF-Export-Einstellungen-Anwendung GUI.
-    Optimiert für zweispaltiges Layout mit modernem, vertrauenswürdigem Design.
+    Optimiert für zweispaltiges Layout mit Apple-Design-Stil.
     """
     
     def __init__(self):
         """Initialisiert die Anwendung und erstellt die GUI."""
         super().__init__()
         
-        # Anwendungsdesign konfigurieren
+        # Anwendungsdesign konfigurieren (Apple-Stil)
         ctk.set_appearance_mode("light")
         ctk.set_default_color_theme("blue")
         
         # Fensterkonfiguration
-        self.title("PDF-Export Einstellungen Installer")
-        self.geometry("1250x910")  # 25% breiter und 30% höher
-        self.minsize(1125, 910)    # Entsprechend angepasste Mindestgröße
+        self.title("PDF-Export Einstellungen")
+        self.geometry("1100x760")  # Breiter als hoch (typisch für Apple)
+        self.minsize(950, 650)
+        
+        # System erkennen
+        self.is_mac = sys.platform == "darwin"
         
         # Fenster zentrieren
         self._center_window()
@@ -106,94 +103,63 @@ class PDFExportEinstellungenGUI(ctk.CTk):
                 logging.warning(f"Konnte App-Icon nicht setzen: {e}")
     
     def _erstelle_ui(self):
-        """Erstellt alle UI-Elemente der Anwendung im zweispaltigen Layout."""
-        # Hauptcontainer mit schmaleren Abständen
-        self.haupt_container = ctk.CTkFrame(self, corner_radius=10, fg_color="#F8F9FA")
-        self.haupt_container.pack(fill=tk.BOTH, expand=True, padx=15, pady=15)
+        """Erstellt alle UI-Elemente der Anwendung im zweispaltigen Apple-Design-Stil."""
+        # Hauptcontainer mit spezifischen Apple-Farben
+        self.haupt_container = ctk.CTkFrame(self, corner_radius=0, fg_color="#F5F5F7")  # Apple Hintergrundfarbe
+        self.haupt_container.pack(fill=tk.BOTH, expand=True)
         
         # Konfiguration des Grid-Layouts
-        self.haupt_container.grid_columnconfigure(0, weight=5)  # Linke Spalte
-        self.haupt_container.grid_columnconfigure(1, weight=6)  # Rechte Spalte
-        self.haupt_container.grid_rowconfigure(1, weight=1)    # Hauptinhalt soll sich ausdehnen
+        self.haupt_container.grid_columnconfigure(0, weight=2)  # Linke Spalte
+        self.haupt_container.grid_columnconfigure(1, weight=3)  # Rechte Spalte
+        self.haupt_container.grid_rowconfigure(1, weight=1)     # Hauptinhalt soll sich ausdehnen
         
         # ----- KOPFBEREICH (über beiden Spalten) -----
         self._erstelle_kopfbereich()
         
         # ----- LINKE SPALTE -----
         self.left_panel = LeftPanel(self.haupt_container, self)
-        self.left_panel.grid(row=1, column=0, sticky="nsew", padx=10, pady=5)
+        self.left_panel.grid(row=1, column=0, sticky="nsew", padx=(20, 10), pady=(0, 20))
         
         # ----- RECHTE SPALTE -----
         self.right_panel = RightPanel(self.haupt_container, self)
-        self.right_panel.grid(row=1, column=1, sticky="nsew", padx=10, pady=5)
+        self.right_panel.grid(row=1, column=1, sticky="nsew", padx=(10, 20), pady=(0, 20))
         
         # ----- STATUSBEREICH (unter beiden Spalten) -----
         self._erstelle_statusbereich()
     
     def _erstelle_kopfbereich(self):
-        """Erstellt den Kopfbereich der Anwendung."""
-        # Header-Frame mit reduzierter Höhe
-        self.header_frame = ctk.CTkFrame(self.haupt_container, fg_color="transparent")
-        self.header_frame.grid(row=0, column=0, columnspan=2, sticky="ew", pady=(8, 2))
+        """Erstellt den Kopfbereich der Anwendung im Apple-Stil."""
+        # Header-Frame
+        self.header_frame = ctk.CTkFrame(self.haupt_container, fg_color="transparent", height=60)
+        self.header_frame.grid(row=0, column=0, columnspan=2, sticky="ew", pady=(20, 15))
         
-        # Horizontales Layout für Logo und Titel
-        self.header_content = ctk.CTkFrame(self.header_frame, fg_color="transparent")
-        self.header_content.pack(fill="x")
-        
-        # Versuche, das Logo zu laden - platzieren wir links neben dem Titel
-        try:
-            # SVG-Logo-Pfad
-            logo_path = os.path.join(os.path.dirname(os.path.dirname(os.path.dirname(
-                os.path.abspath(__file__)))), "links", "Icon.svg")
-                
-            # Placeholder für Logo (kann später erweitert werden)
-            logo_label = ctk.CTkLabel(
-                self.header_content, 
-                text="🖨️", 
-                font=ctk.CTkFont(size=32),
-                text_color="#1E3A8A"
-            )
-            logo_label.pack(side="left", padx=(10, 5))
-        except Exception as e:
-            logging.warning(f"Konnte Logo nicht laden: {e}")
-        
-        # Titel mit größerem Font und Farbe - direkt neben dem Logo
-        self.logo_label = ctk.CTkLabel(
-            self.header_content, 
-            text="PDF-Export Einstellungen", 
-            font=ctk.CTkFont(size=32, weight="bold"),
-            text_color="#1E3A8A"
-        )
-        self.logo_label.pack(side="left", pady=0)
-        
-        # Untertitel direkt unter dem Header-Content mit minimalem Abstand
-        self.subtitle_label = ctk.CTkLabel(
+        # Titel im Apple-Stil (zentriert, größere Schrift)
+        self.title_label = ctk.CTkLabel(
             self.header_frame, 
-            text="Professionelle Druckeinstellungen für Adobe-Programme",
-            font=ctk.CTkFont(size=14),
-            text_color="#4B5563"
+            text="PDF-Export Einstellungen", 
+            font=ctk.CTkFont(size=20, weight="bold"),
+            text_color="#000000"  # Apple verwendet Schwarz für Überschriften
         )
-        self.subtitle_label.pack(pady=(0, 5))
+        self.title_label.place(relx=0.5, rely=0.5, anchor="center")  # Zentriert
         
-        # Trennlinie für visuelle Abgrenzung - mit minimalem Abstand
-        self.separator = ctk.CTkFrame(self.header_frame, height=1, fg_color="#E5E7EB")
-        self.separator.pack(fill="x", padx=10, pady=(0, 2))
+        # Untertitel (falls benötigt)
+        # self.subtitle_label = ctk.CTkLabel(...)
     
     def _erstelle_statusbereich(self):
-        """Erstellt den Statusbereich am unteren Rand mit modernem Design."""
-        # Statusanzeige am unteren Rand - kompakter
-        self.status_frame = ctk.CTkFrame(self.haupt_container, fg_color="#F3F4F6", corner_radius=6)
-        self.status_frame.grid(row=2, column=0, columnspan=2, sticky="ew", pady=(5, 0))
+        """Erstellt den Statusbereich am unteren Rand im Apple-Stil."""
+        # Statusbalken
+        self.status_frame = ctk.CTkFrame(self.haupt_container, fg_color="#E5E5EA", height=30, corner_radius=0)
+        self.status_frame.grid(row=2, column=0, columnspan=2, sticky="ew")
         
-        # Status-Label mit Icon-Simulation - kleinerer Innenabstand
+        # Status-Label im Apple-Stil
         self.status_label = ctk.CTkLabel(
             self.status_frame, 
-            text="⏺ Bereit", 
+            text="• Bereit", 
             anchor="w",
-            font=ctk.CTkFont(size=13),
-            text_color="#4B5563"
+            font=ctk.CTkFont(size=12),
+            text_color="#8E8E93"  # Apple Grau
         )
-        self.status_label.pack(padx=15, pady=5, anchor="w", side="left")
+        self.status_label.pack(padx=20, fill="both")
     
     def lade_einstellungen(self):
         """
@@ -221,48 +187,49 @@ class PDFExportEinstellungenGUI(ctk.CTk):
         """Zeigt den Hinweis an, wenn Adobe Bridge nicht installiert ist."""
         self.bridge_hinweis_frame = ctk.CTkFrame(
             self.haupt_container, 
-            fg_color="#FFF7ED", 
-            corner_radius=6
+            fg_color="#FEF7E5",  # Helles Gelb (Apple Warning Style)
+            corner_radius=0,
+            height=36
         )
-        self.bridge_hinweis_frame.grid(row=3, column=0, columnspan=2, sticky="ew", pady=(5, 0))
+        self.bridge_hinweis_frame.grid(row=3, column=0, columnspan=2, sticky="ew")
         
         bridge_hinweis_text = (
             "⚠️ Adobe Bridge nicht installiert. Farbeinstellungen müssen in jedem Adobe-Programm "
-            "unter 'Bearbeiten > Farbeinstellungen' manuell ausgewählt werden."
+            "manuell ausgewählt werden."
         )
         
         self.bridge_hinweis_text = ctk.CTkLabel(
             self.bridge_hinweis_frame, 
             text=bridge_hinweis_text,
-            text_color="#9A3412",
-            font=ctk.CTkFont(size=13),
-            wraplength=960
+            text_color="#B25000",  # Orange-Braun für Warnungen
+            font=ctk.CTkFont(size=12),
+            anchor="w"
         )
-        self.bridge_hinweis_text.pack(padx=15, pady=6)
+        self.bridge_hinweis_text.pack(padx=20, pady=0, fill="both")
     
     def update_status(self, message):
         """
-        Aktualisiert die Statusanzeige mit visuellen Indikatoren.
+        Aktualisiert die Statusanzeige im Apple-Stil mit visuellen Indikatoren.
         
         Args:
             message (str): Die anzuzeigende Nachricht
         """
         # Status-Icon basierend auf Nachrichteninhalt setzen
         if "fehler" in message.lower() or "error" in message.lower():
-            icon = "⛔ "
-            color = "#B91C1C"  # Rot für Fehler
+            icon = "• "
+            color = "#FF3B30"  # Apple Rot für Fehler
         elif "erfolg" in message.lower() or "fertig" in message.lower() or "✓" in message:
-            icon = "✅ "
-            color = "#15803D"  # Grün für Erfolg
+            icon = "• "
+            color = "#34C759"  # Apple Grün für Erfolg
         elif "warte" in message.lower() or "läuft" in message.lower() or "installation" in message.lower():
-            icon = "⏳ "
-            color = "#0369A1"  # Blau für laufende Prozesse
+            icon = "• "
+            color = "#007AFF"  # Apple Blau für laufende Prozesse
         else:
-            icon = "ℹ️ "
-            color = "#4B5563"  # Neutral
+            icon = "• "
+            color = "#8E8E93"  # Apple Grau für normale Meldungen
         
         # Wenn das Icon bereits in der Nachricht ist, nicht nochmal hinzufügen
-        if not any(symbol in message[:2] for symbol in ["⛔", "✅", "⏳", "ℹ️", "⏺", "✓", "⚠️"]):
+        if not any(symbol in message[:2] for symbol in ["•", "✓", "⚠️", "⏺"]):
             message = icon + message
         
         # Status aktualisieren mit entsprechender Farbe
@@ -280,7 +247,7 @@ class PDFExportEinstellungenGUI(ctk.CTk):
         self.left_panel.set_buttons_state("disabled")
         
         # Status aktualisieren
-        self.update_status("⏳ Installation wird vorbereitet...")
+        self.update_status("• Installation wird vorbereitet...")
         
         # Installation in einem separaten Thread ausführen, um die GUI reaktiv zu halten
         threading.Thread(target=self._installiere_im_hintergrund, 
@@ -332,13 +299,13 @@ class PDFExportEinstellungenGUI(ctk.CTk):
         
         # Status aktualisieren und Messagebox anzeigen
         if erfolgreiche_installationen and not fehlgeschlagene_installationen:
-            self.update_status("✅ Installation erfolgreich abgeschlossen")
+            self.update_status("• Installation erfolgreich abgeschlossen")
             zeige_ergebnis_dialog(self, "Installation abgeschlossen", detaillierter_bericht)
         elif fehlgeschlagene_installationen and not erfolgreiche_installationen:
-            self.update_status("⛔ Installation fehlgeschlagen")
+            self.update_status("• Installation fehlgeschlagen")
             messagebox.showerror("Installation fehlgeschlagen", nachricht)
         else:
-            self.update_status("⚠️ Installation teilweise erfolgreich")
+            self.update_status("• Installation teilweise erfolgreich")
             zeige_ergebnis_dialog(self, "Installation teilweise erfolgreich", detaillierter_bericht)
         
         # Buttons wieder aktivieren
@@ -369,7 +336,7 @@ class PDFExportEinstellungenGUI(ctk.CTk):
             if setting_name in installations_details:
                 for file_info in installations_details[setting_name]:
                     bericht += f"  • {file_info['type']}: {file_info['file']}\n"
-                    bericht += f"    ➔ Ziel: {file_info['destination']}\n\n"
+                    bericht += f"    → Ziel: {file_info['destination']}\n\n"
             else:
                 bericht += "  Keine Details verfügbar.\n\n"
         
