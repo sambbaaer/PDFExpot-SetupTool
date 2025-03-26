@@ -1,72 +1,3 @@
-def _zeige_info(self):
-        """Zeigt Informationen zur Anwendung an."""
-        from .dialogs import zeige_info_dialog
-        zeige_info_dialog(self.main_app)
-    
-def _zeige_hilfe(self):
-        """Zeigt Hilfe zur Anwendung an."""
-        from .dialogs import zeige_hilfe_dialog
-        zeige_hilfe_dialog(self.main_app)
-    
-def _installiere_einstellungen(self):
-        """Startet die Installation der ausgewählten Einstellungen."""
-        # Einstellungen von der linken Seite abrufen
-        einstellungen = self.main_app.left_panel.get_selected_einstellungen()
-        if einstellungen:
-            # Übergeben an die Hauptanwendung zur Installation
-            self.main_app.installiere_einstellungen(einstellungen)
-        else:
-            from tkinter import messagebox
-            messagebox.showwarning("Hinweis", "Bitte wählen Sie mindestens eine Einstellung aus.")
-    
-def set_buttons_state(self, state):
-        """
-        Setzt den Zustand aller Buttons.
-        
-        Args:
-            state (str): "normal" oder "disabled"
-        """
-        self.info_button.configure(state=state)
-        self.hilfe_button.configure(state=state)
-        
-        if state == "disabled":
-            self.install_button.configure(state=state, text="Installation läuft...")
-        else:
-            self.install_button.configure(state=state, text="Ausgewählte Einstellungen installieren")        # Buttons-Frame unter dem Beschreibungsfeld
-        self.buttons_frame = ctk.CTkFrame(self)
-        self.buttons_frame.pack(fill="both", expand=True, padx=15, pady=15)
-        
-        # Buttons für häufige Aktionen
-        self.button_frame1 = ctk.CTkFrame(self.buttons_frame, fg_color="transparent")
-        self.button_frame1.pack(fill="x", padx=15, pady=(15, 10))
-        
-        self.button_frame2 = ctk.CTkFrame(self.buttons_frame, fg_color="transparent")
-        self.button_frame2.pack(fill="x", padx=15, pady=(10, 15))
-        
-        # Erste Reihe Buttons
-        self.info_button = ctk.CTkButton(self.button_frame1, 
-                                      text="Info", 
-                                      command=self._zeige_info,
-                                      width=200,
-                                      font=ctk.CTkFont(size=14))
-        self.info_button.pack(side="left", padx=(0, 5))
-        
-        self.hilfe_button = ctk.CTkButton(self.button_frame1, 
-                                       text="Hilfe", 
-                                       command=self._zeige_hilfe,
-                                       width=200,
-                                       font=ctk.CTkFont(size=14))
-        self.hilfe_button.pack(side="right")
-        
-        # Zweite Reihe Buttons (Installieren-Button war vorher in der linken Spalte)
-        self.install_button = ctk.CTkButton(self.button_frame2, 
-                                         text="Ausgewählte Einstellungen installieren", 
-                                         command=self._installiere_einstellungen,
-                                         font=ctk.CTkFont(size=15, weight="bold"),
-                                         height=45,
-                                         fg_color="#2B7D2B", hover_color="#246A24")
-        self.install_button.pack(fill="x")
-
 """
 Right Panel Modul für PDF-Export-Einstellungen-Installer
 
@@ -90,34 +21,43 @@ from ..utils import find_resource_path
 class RightPanel(ctk.CTkFrame):
     """
     Panel für die rechte Seite der Anwendung.
-    Enthält Beschreibungsbereich für ausgewählte Einstellungen.
+    Enthält Beschreibungsbereich für ausgewählte Einstellungen und Hilfe-Buttons.
     """
     
     def __init__(self, parent, main_app):
         """Initialisiert das Panel."""
-        super().__init__(parent)
+        super().__init__(parent, corner_radius=8, fg_color="#F1F5F9")
         self.main_app = main_app
         self.beschreibungen = {}  # Cache für geladene Beschreibungen
         self._erstelle_ui()
     
     def _erstelle_ui(self):
         """Erstellt die UI-Elemente für das Panel."""
-        # Beschreibungsframe (nur halb so hoch)
-        self.beschreibung_frame = ctk.CTkFrame(self, fg_color=("gray95", "gray15"))
-        self.beschreibung_frame.pack(fill="x", expand=False, padx=15, pady=(15, 0), ipady=10)
+        # Beschreibungsframe mit abgerundeten Ecken - kompakter
+        self.beschreibung_frame = ctk.CTkFrame(self, fg_color="#FFFFFF", corner_radius=8)
+        self.beschreibung_frame.pack(fill="both", expand=True, padx=15, pady=(8, 8))
         
-        # Beschreibungstitel
+        # Beschreibungstitel - kompakter
         self.beschreibung_titel = ctk.CTkLabel(self.beschreibung_frame, 
                                              text="Beschreibung",
-                                             font=ctk.CTkFont(size=16, weight="bold"))
-        self.beschreibung_titel.pack(anchor="w", padx=15, pady=(15, 5))
+                                             font=ctk.CTkFont(size=15, weight="bold"),
+                                             text_color="#1E40AF")
+        self.beschreibung_titel.pack(anchor="w", padx=15, pady=(8, 2))
         
-        # Untertitel für die Beschreibung (wird dynamisch aktualisiert)
+        # Untertitel für die Beschreibung (wird dynamisch aktualisiert) - kompakter
         self.beschreibung_untertitel = ctk.CTkLabel(self.beschreibung_frame, 
                                                  text="Bitte wählen Sie eine Einstellung aus der Liste.",
                                                  font=ctk.CTkFont(size=13, slant="italic"),
-                                                 text_color="#555555")
+                                                 text_color="#6B7280")
         self.beschreibung_untertitel.pack(anchor="w", padx=15, pady=(0, 5))
+        
+        # Trennlinie - dünner
+        self.separator = ctk.CTkFrame(self.beschreibung_frame, height=1, fg_color="#E5E7EB")
+        self.separator.pack(fill="x", padx=15, pady=(0, 5))
+        
+        # Scrollbarer Beschreibungsbereich
+        self.beschreibung_scroll = ctk.CTkScrollableFrame(self.beschreibung_frame, fg_color="transparent")
+        self.beschreibung_scroll.pack(fill="both", expand=True, padx=15, pady=(0, 15))
         
         # Beschreibungstext (wird dynamisch aktualisiert)
         default_desc = (
@@ -125,13 +65,49 @@ class RightPanel(ctk.CTkFrame):
             "Die Einstellungen enthalten vordefinierte Werte für den professionellen Druck."
         )
         
-        self.beschreibung_label = ctk.CTkLabel(self.beschreibung_frame, 
+        self.beschreibung_label = ctk.CTkLabel(self.beschreibung_scroll, 
                                              text=default_desc,
                                              font=ctk.CTkFont(size=13),
                                              justify="left",
-                                             wraplength=440,
-                                             height=150)  # Feste Höhe begrenzt
-        self.beschreibung_label.pack(anchor="w", padx=15, pady=(5, 15), fill="x")
+                                             wraplength=440)
+        self.beschreibung_label.pack(anchor="w", fill="x")
+        
+        # Hilfe- und Info-Buttons im unteren Bereich - kompakter
+        self.button_frame = ctk.CTkFrame(self, fg_color="transparent")
+        self.button_frame.pack(fill="x", padx=15, pady=(3, 8))
+        
+        # Buttons in einer Reihe - kleiner
+        self.info_button = ctk.CTkButton(self.button_frame, 
+                                      text="Info", 
+                                      command=self._zeige_info,
+                                      width=110,
+                                      height=30,
+                                      fg_color="#6366F1", 
+                                      hover_color="#4F46E5",
+                                      corner_radius=6,
+                                      font=ctk.CTkFont(size=13))
+        self.info_button.pack(side="left", padx=(0, 10))
+        
+        self.hilfe_button = ctk.CTkButton(self.button_frame, 
+                                       text="Hilfe", 
+                                       command=self._zeige_hilfe,
+                                       width=110,
+                                       height=30,
+                                       fg_color="#8B5CF6", 
+                                       hover_color="#7C3AED",
+                                       corner_radius=6,
+                                       font=ctk.CTkFont(size=13))
+        self.hilfe_button.pack(side="left")
+    
+    def _zeige_info(self):
+        """Zeigt Informationen zur Anwendung an."""
+        from .dialogs import zeige_info_dialog
+        zeige_info_dialog(self.main_app)
+    
+    def _zeige_hilfe(self):
+        """Zeigt Hilfe zur Anwendung an."""
+        from .dialogs import zeige_hilfe_dialog
+        zeige_hilfe_dialog(self.main_app)
     
     def zeige_beschreibung(self, selected_name, selected_index, selection):
         """
@@ -145,10 +121,12 @@ class RightPanel(ctk.CTkFrame):
         if not selected_name:
             # Keine Auswahl - Standardtext anzeigen
             self.beschreibung_untertitel.configure(
-                text="Bitte wählen Sie eine Einstellung aus der Liste."
+                text="Bitte wählen Sie eine Einstellung aus der Liste.",
+                text_color="#6B7280"
             )
             self.beschreibung_label.configure(
-                text="Hier erscheint die Beschreibung der ausgewählten Einstellung."
+                text="Hier erscheint die Beschreibung der ausgewählten Einstellung.",
+                text_color="#6B7280"
             )
             
             # Hinweisrahmen entfernen, falls vorhanden
@@ -173,10 +151,16 @@ class RightPanel(ctk.CTkFrame):
             if hasattr(self, 'hinweis_frame'):
                 self.hinweis_frame.pack_forget()
             
-            self.beschreibung_untertitel.configure(text=f"Detaillierte Beschreibung von '{selected_name}':")
+            self.beschreibung_untertitel.configure(
+                text=f"Detaillierte Beschreibung von '{selected_name}':",
+                text_color="#4B5563"
+            )
         
         # Beschreibung anzeigen
-        self.beschreibung_label.configure(text=beschreibung)
+        self.beschreibung_label.configure(
+            text=beschreibung,
+            text_color="#374151"
+        )
     
     def _zeige_mehrfachauswahl_hinweis(self, selected_name, selected_count):
         """
@@ -191,22 +175,31 @@ class RightPanel(ctk.CTkFrame):
         
         # Erstelle Hinweisrahmen mit gelbem Hintergrund für Mehrfachauswahl
         if not hasattr(self, 'hinweis_frame'):
-            self.hinweis_frame = ctk.CTkFrame(self.beschreibung_frame, fg_color="#FFF9C4", corner_radius=6)
-            self.hinweis_text = ctk.CTkLabel(self.hinweis_frame, 
-                                          text=anzahl_text,
-                                          text_color="#5D4037",
-                                          font=ctk.CTkFont(size=13, slant="italic"),
-                                          wraplength=440)
+            self.hinweis_frame = ctk.CTkFrame(
+                self.beschreibung_frame, 
+                fg_color="#FEF9C3", 
+                corner_radius=6
+            )
+            self.hinweis_text = ctk.CTkLabel(
+                self.hinweis_frame, 
+                text=anzahl_text,
+                text_color="#854D0E",
+                font=ctk.CTkFont(size=13, slant="italic"),
+                wraplength=440
+            )
             self.hinweis_text.pack(padx=10, pady=8)
         else:
             self.hinweis_text.configure(text=anzahl_text)
         
         # Paket den Frame vor dem Beschreibungslabel
         if self.hinweis_frame.winfo_manager() != 'pack':
-            self.hinweis_frame.pack(fill="x", padx=15, pady=(0, 10), before=self.beschreibung_label)
+            self.hinweis_frame.pack(fill="x", padx=15, pady=(0, 10), before=self.separator)
         
-        # Normale Untertitelanzeige zurücksetzen
-        self.beschreibung_untertitel.configure(text=f"Detaillierte Beschreibung von '{selected_name}':")
+        # Normale Untertitelanzeige setzen
+        self.beschreibung_untertitel.configure(
+            text=f"Detaillierte Beschreibung von '{selected_name}':",
+            text_color="#4B5563"
+        )
     
     def _lade_beschreibung(self, name, index):
         """
@@ -236,7 +229,7 @@ class RightPanel(ctk.CTkFrame):
                 joboptions_pfad = find_resource_path(os.path.join("resources", einstellung["Adobe PDF Settings"]))
                 
                 # Statusmeldung aktualisieren
-                self.main_app.update_status(f"Lade Beschreibung für {name}...")
+                self.main_app.update_status(f"⏳ Lade Beschreibung für {name}...")
                 
                 # Beschreibung extrahieren
                 beschreibung = joboptions_parser.get_readable_description(joboptions_pfad)
@@ -249,9 +242,19 @@ class RightPanel(ctk.CTkFrame):
                 self.beschreibungen[name] = f"Diese Einstellung enthält keine PDF-Exporteinstellungen."
                 
             # Status zurücksetzen
-            self.main_app.update_status("Bereit")
+            self.main_app.update_status("✓ Bereit")
             
         except Exception as e:
             # Bei Fehlern Standard-Beschreibung verwenden und Fehler loggen
             logging.error(f"Fehler beim Laden der Beschreibung für {name}: {e}")
             self.beschreibungen[name] = standard_beschreibung
+            
+    def set_buttons_state(self, state):
+        """
+        Setzt den Zustand aller Buttons.
+        
+        Args:
+            state (str): "normal" oder "disabled"
+        """
+        self.info_button.configure(state=state)
+        self.hilfe_button.configure(state=state)

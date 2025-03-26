@@ -16,71 +16,80 @@ class LeftPanel(ctk.CTkFrame):
     
     def __init__(self, parent, main_app):
         """Initialisiert das Panel."""
-        super().__init__(parent)
+        super().__init__(parent, corner_radius=8, fg_color="#F1F5F9")
         self.main_app = main_app
         self._erstelle_ui()
     
     def _erstelle_ui(self):
         """Erstellt die UI-Elemente für das Panel."""
-        # Erklärung für die Anwendung
+        # Erklärung für die Anwendung - kompaktere Version
         self.erklaerung_titel = ctk.CTkLabel(self, 
                                           text="Was macht dieses Programm?",
-                                          font=ctk.CTkFont(size=16, weight="bold"))
-        self.erklaerung_titel.pack(anchor="w", padx=15, pady=(15, 5))
+                                          font=ctk.CTkFont(size=15, weight="bold"),
+                                          text_color="#1E40AF")
+        self.erklaerung_titel.pack(anchor="w", padx=15, pady=(8, 2))
         
         erklaerung_text = (
             "Dieses Programm installiert vordefinierte Einstellungen für Adobe-Programme wie InDesign, "
-            "Photoshop und Illustrator. Diese Einstellungen sind speziell auf professionelle "
-            "Druckanforderungen abgestimmt und sorgen für beste Druckergebnisse.\n\n"
-            "Mit einem Klick werden alle nötigen Dateien an den richtigen Stellen auf Ihrem System installiert:"
+            "Photoshop und Illustrator für professionelle Druckanforderungen."
         )
         
         self.erklaerung_label = ctk.CTkLabel(self, 
                                           text=erklaerung_text,
                                           font=ctk.CTkFont(size=13),
                                           justify="left",
-                                          wraplength=440)
-        self.erklaerung_label.pack(anchor="w", padx=15, pady=(0, 10))
+                                          wraplength=420)
+        self.erklaerung_label.pack(anchor="w", padx=15, pady=(0, 5))
         
-        # Liste der installierten Dateien
+        # Liste der installierten Dateien in einem kompakteren Box-Element
+        self.files_box = ctk.CTkFrame(self, fg_color="#E0E7FF", corner_radius=6)
+        self.files_box.pack(fill="x", padx=15, pady=(0, 8))
+        
+        self.files_titel = ctk.CTkLabel(self.files_box, 
+                                     text="Folgende Dateien werden installiert:",
+                                     font=ctk.CTkFont(size=13, weight="bold"),
+                                     text_color="#312E81")
+        self.files_titel.pack(anchor="w", padx=12, pady=(5, 2))
+        
         dateien_text = (
             "• Adobe PDF-Exporteinstellungen (.joboptions)\n"
             "• Farbeinstellungen für Adobe-Programme (.csf)\n"
             "• ICC-Farbprofile für professionellen Druck (.icc)"
         )
         
-        self.dateien_label = ctk.CTkLabel(self,
+        self.dateien_label = ctk.CTkLabel(self.files_box,
                                        text=dateien_text,
                                        font=ctk.CTkFont(size=13),
-                                       justify="left")
-        self.dateien_label.pack(anchor="w", padx=25, pady=(0, 15))
+                                       justify="left",
+                                       text_color="#4338CA")
+        self.dateien_label.pack(anchor="w", padx=25, pady=(0, 6))
         
-        # Erklärung für die Listbox
+        # Erklärung für die Listbox - kompaktere Version
         self.info_label = ctk.CTkLabel(self, 
                                       text="Bitte wählen Sie die gewünschten Einstellungen:",
                                       font=ctk.CTkFont(size=14, weight="bold"),
-                                      anchor="w")
-        self.info_label.pack(padx=15, pady=(10, 5), anchor="w")
+                                      anchor="w",
+                                      text_color="#1E3A8A")
+        self.info_label.pack(padx=15, pady=(5, 3), anchor="w")
         
-        # Hilfetext für die Mehrfachauswahl
+        # Hilfetext für die Mehrfachauswahl - einzeilig und kompakter
         self.help_label = ctk.CTkLabel(self, 
-                                     text="• Mit Strg-Taste (Win) oder Cmd-Taste (Mac): Mehrere auswählen\n"
-                                     "• Mit der Shift-Taste: Bereich auswählen",
-                                     text_color="gray60",
+                                     text="Strg/Cmd: Mehrere auswählen • Shift: Bereich auswählen",
+                                     text_color="#6B7280",
                                      font=ctk.CTkFont(size=12),
                                      justify="left",
                                      anchor="w")
-        self.help_label.pack(padx=15, pady=(0, 5), anchor="w")
+        self.help_label.pack(padx=15, pady=(0, 3), anchor="w")
         
-        # Frame für die Listbox
-        self.list_frame = ctk.CTkFrame(self)
-        self.list_frame.pack(padx=15, pady=5, fill="both", expand=True)
+        # Frame für die Listbox - mehr Platz für die Liste
+        self.list_frame = ctk.CTkFrame(self, fg_color="#FFFFFF", corner_radius=6)
+        self.list_frame.pack(padx=15, pady=3, fill="both", expand=True)
         
-        # Einstellungen Listbox (Standard-Tkinter, da CTk keine Listbox hat)
-        self.einstellungs_liste = tk.Listbox(self.list_frame, height=12, selectmode=tk.MULTIPLE,
+        # Einstellungen Listbox - optimierte Höhe
+        self.einstellungs_liste = tk.Listbox(self.list_frame, height=8, selectmode=tk.MULTIPLE,
                                           font=("Segoe UI", 13), 
                                           activestyle="none",
-                                          bg="#F9F9F9", fg="#333333",
+                                          bg="#FFFFFF", fg="#333333",
                                           selectbackground="#3B8ED0", selectforeground="white")
         self.einstellungs_liste.pack(padx=5, pady=5, fill="both", expand=True)
         
@@ -89,34 +98,43 @@ class LeftPanel(ctk.CTkFrame):
         self.scrollbar.pack(side="right", fill="y")
         self.einstellungs_liste.config(yscrollcommand=self.scrollbar.set)
         
-        # Button-Row für Auswahloperationen
-        self.button_row = ctk.CTkFrame(self, fg_color="transparent")
-        self.button_row.pack(fill="x", padx=15, pady=(5, 15))
+        # Button-Box für Auswahloperationen - kompakter
+        self.button_box = ctk.CTkFrame(self, fg_color="transparent")
+        self.button_box.pack(fill="x", padx=15, pady=(3, 3))
         
-        # Buttons für Auswahl (nebeneinander)
-        self.alle_button = ctk.CTkButton(self.button_row, text="Alle auswählen", 
+        # Buttons für Auswahl (nebeneinander) - schmaler
+        self.alle_button = ctk.CTkButton(self.button_box, text="Alle auswählen", 
                                        command=self.alle_auswaehlen,
-                                       width=200,
-                                       font=ctk.CTkFont(size=13))
+                                       width=190,
+                                       font=ctk.CTkFont(size=13),
+                                       fg_color="#3B82F6", 
+                                       hover_color="#2563EB",
+                                       corner_radius=6,
+                                       height=30)
         self.alle_button.pack(side="left", padx=(0, 5))
         
-        self.keine_button = ctk.CTkButton(self.button_row, text="Auswahl aufheben", 
+        self.keine_button = ctk.CTkButton(self.button_box, text="Auswahl aufheben", 
                                         command=self.keine_auswaehlen,
-                                        fg_color="gray70", hover_color="gray50",
-                                        width=200,
-                                        font=ctk.CTkFont(size=13))
+                                        fg_color="#94A3B8", 
+                                        hover_color="#64748B",
+                                        width=190,
+                                        corner_radius=6,
+                                        font=ctk.CTkFont(size=13),
+                                        height=30)
         self.keine_button.pack(side="right")
         
-        # Installieren-Button
+        # Installieren-Button in eigenem Container mit minimalem Abstand
         self.install_button_frame = ctk.CTkFrame(self, fg_color="transparent")
-        self.install_button_frame.pack(fill="x", padx=15, pady=(10, 15))
+        self.install_button_frame.pack(fill="x", padx=15, pady=(8, 10))
         
         self.install_button = ctk.CTkButton(self.install_button_frame, 
                                           text="Ausgewählte Einstellungen installieren", 
                                           command=self.installiere_einstellungen,
                                           font=ctk.CTkFont(size=15, weight="bold"),
-                                          height=45,
-                                          fg_color="#2B7D2B", hover_color="#246A24")
+                                          height=40,
+                                          fg_color="#059669", 
+                                          hover_color="#047857",
+                                          corner_radius=8)
         self.install_button.pack(fill="x")
     
     def lade_einstellungen(self, einstellungen_daten):
